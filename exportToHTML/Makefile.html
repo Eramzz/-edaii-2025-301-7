@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>Makefile</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Makefile</font>
+</center></td></tr></table>
+<pre><span class="s0">SRC_FILES </span><span class="s1">:= </span><span class="s2">$</span><span class="s1">(</span><span class="s0">filter-out src/main.c, </span><span class="s2">$</span><span class="s1">(</span><span class="s0">wildcard src/*.c</span><span class="s1">))</span>
+
+<span class="s0">compile</span><span class="s1">:</span>
+	<span class="s0">gcc -Wall -Wextra -Werror src/main.c </span><span class="s2">$</span><span class="s1">(</span><span class="s0">SRC_FILES</span><span class="s1">) </span><span class="s0">-o main.out</span>
+	
+<span class="s0">r</span><span class="s1">:</span>
+	<span class="s0">make compile</span>
+	<span class="s0">./main.out</span>
+
+<span class="s0">v</span><span class="s1">: </span>
+	<span class="s0">make compile</span>
+	<span class="s0">valgrind --leak-check</span><span class="s1">=</span><span class="s0">yes ./main.out</span>
+
+<span class="s0">compiledebug</span><span class="s1">:</span>
+	<span class="s0">gcc src/main.c </span><span class="s2">$</span><span class="s1">(</span><span class="s0">SRC_FILES</span><span class="s1">) </span><span class="s0">-g -o main.out</span>
+
+<span class="s0">d</span><span class="s1">:</span>
+	<span class="s0">make compiledebug</span>
+	<span class="s0">gdb ./main.out</span>
+
+
+<span class="s0">compiletest</span><span class="s1">:</span>
+	<span class="s0">gcc -Wall -Wextra -Werror test/test.c test/utils.c </span><span class="s2">$</span><span class="s1">(</span><span class="s0">SRC_FILES</span><span class="s1">) </span><span class="s0">-o test.out</span>
+
+<span class="s0">t</span><span class="s1">:</span>
+	<span class="s0">make compiletest</span>
+	<span class="s0">./test.out</span>
+
+<span class="s0">compiletestdebug</span><span class="s1">:</span>
+	<span class="s0">gcc test/test.c test/utils.c -g -o test.out</span>
+
+<span class="s0">dt</span><span class="s1">:</span>
+	<span class="s0">make compiletestdebug</span>
+	<span class="s0">gdb ./test.out</span>
+
+<span class="s0">c</span><span class="s1">:</span>
+	<span class="s0">rm main.out </span><span class="s1">|| </span><span class="s0">true </span>
+	<span class="s0">rm test.out </span><span class="s1">|| </span><span class="s0">true</span>
+
+<span class="s0">f</span><span class="s1">:</span>
+	<span class="s0">clang-format -i **/*.c **/*.h</span>
+
+<span class="s0">cf</span><span class="s1">:</span>
+	<span class="s0">./check-format.sh</span>
+</pre>
+</body>
+</html>
