@@ -15,6 +15,7 @@ typedef struct Query {
 } Query;
 
 QueryItem* queryItemCreate(const char* word);
+void NormalizeWord(char* word);
 Query* queryInit(const char* input);
 void queryFree(Query* query);
 

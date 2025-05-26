@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include "query.h"
 
+
 //Función que crea un nuevo elemento para la linked ist
 QueryItem* queryItemCreate(const char* word) {
     QueryItem* item = (QueryItem*)malloc(sizeof(QueryItem)); //reserva memoria para una request

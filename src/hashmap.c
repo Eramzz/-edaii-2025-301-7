@@ -2,7 +2,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "hashmap.h"
-#include "query.h"  // For NormalizeWord
+#include "query.h"  //NormalizeWord
+
 //FUNCION QUE CONVIERTE PALABRA A NUMERO
 unsigned int hash(const char* str, int size) { //entra palabra que es lo que cambiar a num, tamaño array
     unsigned int hash = 5381; //inicializa el valor hash
@@ -13,7 +14,7 @@ unsigned int hash(const char* str, int size) { //entra palabra que es lo que cam
 }
 
 ReverseIndex* reverseIndexCreate(int size) {
-    ReverseIndex* index = malloc(sizeof(ReverseIndex));// Reserva memoria para la estructura ReverseIndex
+    ReverseIndex* index = malloc(sizeof(ReverseIndex));//Reserva memoria para la estructura ReverseIndex
     index->size = size;// Guarda el tamaño de la tabla hash
     index->buckets = malloc(size * sizeof(WordEntry*));    // Reserva memoria para el array de buckets (punteros a WordEntry)
     for (int i = 0; i < size; i++) {     // Inicializa cada bucket manualmente a NULL
@@ -118,6 +119,7 @@ void reverseIndexBuild(ReverseIndex* index, DocumentsList* list) {
         doc = doc->next;                                             //Avanza al siguiente documento
     }
 }
+
 void reverseIndexAddAll(ReverseIndex* index, DocumentsList* docs) {
     Document* doc = docs->head;                                      // Empieza por el primer documento
 
