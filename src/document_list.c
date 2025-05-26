@@ -4,11 +4,11 @@
 #include <string.h>
 #include "document_list.h"
 
-void documentListInit(DocumentList* list) {
+void documentsListInit(DocumentList* list) {
     list->head = NULL;
 }
 
-void documentListLoadFromDir(DocumentList* list, const char* dirpath) {
+void documentListLoadFromDir(DocumentsList* list, const char* dirpath) {
     DIR* dir = opendir(dirpath);
     if (!dir) return;
 
@@ -27,7 +27,7 @@ void documentListLoadFromDir(DocumentList* list, const char* dirpath) {
     closedir(dir);
 }
 
-void documentListPrint(DocumentList* list) {
+void documentListPrint(DocumentsList* list) {
     Document* curr = list->head;
     int index = 0;
     while (curr) {
@@ -36,7 +36,7 @@ void documentListPrint(DocumentList* list) {
     }
 }
 
-void documentListFree(DocumentList* list) {
+void documentListFree(DocumentsList* list) {
     Document* curr = list->head;
     while (curr) {
         Document* next = curr->next;
