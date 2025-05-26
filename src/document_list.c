@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "document_list.h"
+#include <stdbool.h>
+
 
 void documentsListInit(DocumentList* list) {
     list->head = NULL;

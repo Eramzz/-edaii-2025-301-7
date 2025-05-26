@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include "hashmap.h"
 #include "query.h"  //NormalizeWord
+#include <stdbool.h>
+
 
 //FUNCION QUE CONVIERTE PALABRA A NUMERO
 unsigned int hash(const char* str, int size) { //entra palabra que es lo que cambiar a num, tamaño array

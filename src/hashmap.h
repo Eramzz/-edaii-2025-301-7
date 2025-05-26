@@ -5,6 +5,8 @@
 #define HASHMAP_H
 
 #include "document.h"
+#include <stdbool.h>
+
 
 //estructura nodo de la lista quew tiene puntero a doc
 typedef struct DocumentNode {

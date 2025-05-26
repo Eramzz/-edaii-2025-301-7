@@ -2,6 +2,8 @@
 #define GRAPH_H
 
 #include "document.h"
+#include <stdbool.h>
+
 
 typedef struct GraphNode {
     int document_id;
