@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #define INITIAL_LINKS_CAPACITY 10
-
+// funcion
 Document* documentDeserialize(char* path) {
     FILE* file = fopen(path, "r");
     if (!file) {
