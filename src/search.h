@@ -2,6 +2,8 @@
 // Created by sofia on 08/05/2025.
 //
 
+//NO HACE FALTA, SE UTILIZA REVERSE_INDEX.C
+
 #ifndef SEARCH_H
 #define SEARCH_H
 

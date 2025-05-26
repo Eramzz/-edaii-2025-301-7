@@ -4,6 +4,8 @@
 #include "document.h"
 #include "query.h"
 
+//NO HACE FALTA, SE UTILIZA REVERSE_INDEX.C
+
 int containsAllWords(Document* doc, Query* q) {
     QueryItem* item = q->head;
     while (item) {
