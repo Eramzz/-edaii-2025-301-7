@@ -232,7 +232,7 @@ ReverseIndex* reverseIndexDeserialize(char* filename) {
     size_t len = 0;
     ssize_t read;
 
-    while ((read = getline(&line, &len, file)) != -1) {
+    while ((read = fgets(&line, &len, file)) != -1) {
         line[strcspn(line, "\n")] = '\0';
 
         char* word = strtok(line, " ");
