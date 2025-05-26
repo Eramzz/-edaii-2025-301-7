@@ -1,5 +1,7 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
+#include <stdbool.h>
+
 
 typedef struct Link {
     int destination_id;

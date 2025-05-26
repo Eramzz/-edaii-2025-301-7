@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdbool.h>
+
 
 #define INITIAL_LINKS_CAPACITY 10
 // funcion

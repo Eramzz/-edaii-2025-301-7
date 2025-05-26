@@ -8,6 +8,8 @@
 #include <string.h>
 #include "document_list.h"
 #include "query.h"
+#include <stdbool.h>
+
 
 extern void searchDocuments(DocumentList* docs, Query* q);
 

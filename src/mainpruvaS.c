@@ -4,6 +4,8 @@
 #include "document.h"
 #include "query.h"
 #include "reverse_index.h"
+#include <stdbool.h>
+
 
 #define MAX_QUERY_LENGTH 256
 

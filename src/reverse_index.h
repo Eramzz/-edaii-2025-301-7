@@ -3,6 +3,8 @@
 #define REVERSE_INDEX_H
 
 #include "document.h"
+#include <stdbool.h>
+
 
 typedef struct ReverseIndexEntry {
     char* word;

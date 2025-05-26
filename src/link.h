@@ -1,5 +1,6 @@
 #ifndef LINK_H
 #define LINK_H
+#include <stdbool.h>
 
 typedef struct Link {
     int id;

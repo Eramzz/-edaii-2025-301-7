@@ -2,6 +2,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "query.h"
+#include <stdbool.h>
+
 
 
 //Función que crea un nuevo elemento para la linked ist
