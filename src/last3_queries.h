@@ -1,6 +1,7 @@
 //
 // Created by sofia on 08/05/2025.
 //
+#include <stdbool.h>
 
 #ifndef LAST3_QUERIES_H
 #define LAST3_QUERIES_H

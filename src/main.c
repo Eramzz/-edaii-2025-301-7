@@ -8,9 +8,6 @@
 #include <string.h>
 #include "document_list.h"
 #include "query.h"
-#include "document.h"
-#include "reverse_index.h"
-#
 
 extern void searchDocuments(DocumentList* docs, Query* q);
 

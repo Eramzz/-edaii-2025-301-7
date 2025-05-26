@@ -1,6 +1,7 @@
 //
 // Created by Dell on 22/05/2025.
 //
+#include <stdbool.h>
 
 #ifndef REVERSE_INDEX_H
 #define REVERSE_INDEX_H

@@ -3,6 +3,7 @@
 //
 
 //NO HACE FALTA, SE UTILIZA REVERSE_INDEX.C
+#include <stdbool.h>
 
 #ifndef SEARCH_H
 #define SEARCH_H

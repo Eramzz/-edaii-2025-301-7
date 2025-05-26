@@ -1,5 +1,6 @@
 #ifndef DOCUMENT_LIST_H
 #define DOCUMENT_LIST_H
+#include <stdbool.h>
 
 
 #ifndef DOCUMENT_H

@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include "link.h"
+#include <stdbool.h>
+
 
 Link* linkCreate(int id) {
     Link* l = (Link*)malloc(sizeof(Link));

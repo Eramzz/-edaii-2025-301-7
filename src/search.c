@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include "document.h"
 #include "query.h"
+#include <stdbool.h>
+
 
 //NO HACE FALTA, SE UTILIZA REVERSE_INDEX.C
 
