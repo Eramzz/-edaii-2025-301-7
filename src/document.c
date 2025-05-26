@@ -30,7 +30,7 @@ Document* documentDeserialize(char* path) {
     // Read title
     char* title = NULL;
     size_t title_len = 0;
-    if (getline(&title, &title_len, file) == -1) {
+    if (fgets(&title, &title_len, file) == -1) {
         free(doc);
         fclose(file);
         return NULL;
@@ -49,7 +49,7 @@ Document* documentDeserialize(char* path) {
     doc->links = NULL;
     doc->relevance_score = 0.0f;
 
-    while ((read = getline(&line, &line_len, file)) != -1) {
+    while ((read = fgets(&line, &line_len, file)) != -1) {
         // Check for links in the line
         char* link_start = strchr(line, '[');
         while (link_start) {
