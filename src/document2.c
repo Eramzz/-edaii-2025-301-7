@@ -77,6 +77,7 @@ Document* documentDeserialize(char* path) {
                     new_link->id = dest_id;
                     new_link->next = doc->links;
                     doc->links = new_link;
+
                     free(link_text);
                     free(dest_str);
 
