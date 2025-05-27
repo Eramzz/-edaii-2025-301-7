@@ -2,6 +2,7 @@
 #define DOCUMENT2_H
 
 #include "link.h"
+#include <stdbool.h>
 
 typedef struct Document {
     int id;

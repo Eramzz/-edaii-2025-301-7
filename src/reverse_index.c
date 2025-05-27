@@ -113,19 +113,19 @@ void reverseIndexBuild(ReverseIndex* index, DocumentsList* documents) {
     Document* current = documents->head;
     while (current) {
         char* title = strdup(current->title);
-        char* word = strtok(title, " \t\n\r.,;:!?()[]{}\");
+        char* word = strtok(title, " \t\n\r.,;:!?()[]{}");
         while (word) {
             reverseIndexAdd(index, word, current);
-            word = strtok(NULL, " \t\n\r.,;:!?()[]{}\");
+            word = strtok(NULL, " \t\n\r.,;:!?()[]{}");
         }
         free(title);
 
         if (current->body) {
             char* body = strdup(current->body);
-            word = strtok(body, " \t\n\r.,;:!?()[]{}\");
+            word = strtok(body, " \t\n\r.,;:!?()[]{}");
             while (word) {
                 reverseIndexAdd(index, word, current);
-                word = strtok(NULL, " \t\n\r.,;:!?()[]{}\");
+                word = strtok(NULL, " \t\n\r.,;:!?()[]{}");
             }
             free(body);
         }
