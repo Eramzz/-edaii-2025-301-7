@@ -7,6 +7,7 @@
 #include "query.h"
 #include "directed_graph.h"
 #include "last3_queries.h"
+#include "document_list.h"
 
 #define MAX_QUERY_LENGTH 256
 
