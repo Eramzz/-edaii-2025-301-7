@@ -19,9 +19,8 @@ typedef struct Node {
 } Node;
 
 typedef struct DocumentsList {
-   int size;
-   Node* head;
-   Node* tail;
+  	Document* head;
+	int size;
 } DocumentsList;
 
 Document* DocumentsListInit();

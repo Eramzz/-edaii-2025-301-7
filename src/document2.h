@@ -1,6 +1,8 @@
 #ifndef DOCUMENT2_H
 #define DOCUMENT2_H
 
+#include "link.h"
+
 typedef struct Link {
     int destination_id;
     char* text;

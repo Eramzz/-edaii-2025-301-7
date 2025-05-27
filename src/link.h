@@ -2,10 +2,6 @@
 #define LINK_H
 #include <stdbool.h>
 
-typedef struct Link {
-    int id;
-    struct Link* next;
-} Link;
 
 typedef struct links {
     int size;
