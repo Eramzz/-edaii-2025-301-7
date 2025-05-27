@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include "document2.h"
 #include "link.h"
 #include "reverse_index.h"
@@ -102,4 +103,17 @@ Document* documentDeserialize(char* path) {
     doc->body = body;
     fclose(file);
     return doc;
+}
+
+void documentsListFree(DocumentsList* list) {
+    if (!list) return;
+
+    Document* curr = list->head;
+    while (curr) {
+        Document* next = curr->next;
+        documentFree(curr, true);
+        curr = next;
+    }
+    list->head = NULL;
+    list->size = 0;
 }

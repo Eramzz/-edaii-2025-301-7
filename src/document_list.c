@@ -1,4 +1,5 @@
 #include "document_list.h"
+#include "document2.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
