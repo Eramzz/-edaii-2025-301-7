@@ -1,7 +1,7 @@
 #ifndef DOCUMENT_LIST_H
 #define DOCUMENT_LIST_H
 
-#include "document.h"
+#include "document2.h"
 #include <stdbool.h>
 
 void documentsListInit(DocumentsList* list);
