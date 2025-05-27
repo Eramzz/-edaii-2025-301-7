@@ -1,10 +1,7 @@
-
 #ifndef REVERSE_INDEX_H
 #define REVERSE_INDEX_H
 
-#include "document.h"
-#include <stdbool.h>
-
+#include "document2.h"
 
 typedef struct ReverseIndexEntry {
     char* word;
@@ -12,10 +9,10 @@ typedef struct ReverseIndexEntry {
     struct ReverseIndexEntry* next;
 } ReverseIndexEntry;
 
-typedef struct ReverseIndex {
+typedef struct {
     ReverseIndexEntry** entries;
-    int size;
     int capacity;
+    int size;
 } ReverseIndex;
 
 ReverseIndex* reverseIndexCreate(int capacity);
@@ -24,6 +21,7 @@ DocumentsList* reverseIndexGet(ReverseIndex* index, char* word);
 void reverseIndexFree(ReverseIndex* index);
 void reverseIndexBuild(ReverseIndex* index, DocumentsList* documents);
 void reverseIndexSerialize(ReverseIndex* index, char* filename);
-ReverseIndex* reverseIndexDeserialize(char* filename);
+ReverseIndex* reverseIndexDeserialize(char* filename, DocumentsList* all_docs);
+Document* findDocumentById(DocumentsList* list, int id);
 
-#endif
+#endif // REVERSE_INDEX_H

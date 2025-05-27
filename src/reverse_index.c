@@ -34,77 +34,31 @@ ReverseIndex* reverseIndexCreate(int capacity) {
 void reverseIndexAdd(ReverseIndex* index, char* word, Document* doc) {
     if (!index || !word || !doc) return;
 
-    // Normalize word (lowercase)
-    for (char* p = word; *p; p++) {
-        *p = tolower(*p);
-    }
+    for (char* p = word; *p; p++) *p = tolower(*p);
 
     unsigned long h = hash(word, index->capacity);
     ReverseIndexEntry* entry = index->entries[h];
 
-    // Check if word already exists
     while (entry) {
         if (strcmp(entry->word, word) == 0) {
-            // Check if document already in list
             Document* current = entry->documents->head;
             while (current) {
-                if (current->id == doc->id) {
-                    return; // Document already indexed for this word
-                }
+                if (current->id == doc->id) return;
                 current = current->next;
             }
-
-            // Add document to list
-            Document* doc_copy = (Document*)malloc(sizeof(Document));
-            if (!doc_copy) return;
-
-            doc_copy->id = doc->id;
-            doc_copy->title = strdup(doc->title);
-            doc_copy->body = NULL; // We don't need the body in the index
-            doc_copy->links = NULL;
-            doc_copy->relevance_score = 0.0f;
-            doc_copy->next = NULL;
-
-            documentsListAppend(entry->documents, doc_copy);
+            documentsListAppend(entry->documents, doc);
             return;
         }
         entry = entry->next;
     }
 
-    // Create new entry
     ReverseIndexEntry* new_entry = (ReverseIndexEntry*)malloc(sizeof(ReverseIndexEntry));
-    if (!new_entry) return;
-
     new_entry->word = strdup(word);
     new_entry->documents = (DocumentsList*)malloc(sizeof(DocumentsList));
-    if (!new_entry->documents) {
-        free(new_entry->word);
-        free(new_entry);
-        return;
-    }
-
     new_entry->documents->head = NULL;
     new_entry->documents->size = 0;
+    documentsListAppend(new_entry->documents, doc);
 
-    // Add document to new entry
-    Document* doc_copy = (Document*)malloc(sizeof(Document));
-    if (!doc_copy) {
-        free(new_entry->word);
-        free(new_entry->documents);
-        free(new_entry);
-        return;
-    }
-
-    doc_copy->id = doc->id;
-    doc_copy->title = strdup(doc->title);
-    doc_copy->body = NULL;
-    doc_copy->links = NULL;
-    doc_copy->relevance_score = 0.0f;
-    doc_copy->next = NULL;
-
-    documentsListAppend(new_entry->documents, doc_copy);
-
-    // Add to hash table
     new_entry->next = index->entries[h];
     index->entries[h] = new_entry;
     index->size++;
@@ -113,11 +67,8 @@ void reverseIndexAdd(ReverseIndex* index, char* word, Document* doc) {
 DocumentsList* reverseIndexGet(ReverseIndex* index, char* word) {
     if (!index || !word) return NULL;
 
-    // Normalize word (lowercase)
     char* normalized = strdup(word);
-    for (char* p = normalized; *p; p++) {
-        *p = tolower(*p);
-    }
+    for (char* p = normalized; *p; p++) *p = tolower(*p);
 
     unsigned long h = hash(normalized, index->capacity);
     ReverseIndexEntry* entry = index->entries[h];
@@ -142,13 +93,11 @@ void reverseIndexFree(ReverseIndex* index) {
         while (entry) {
             ReverseIndexEntry* next = entry->next;
             free(entry->word);
-            documentsListFree(entry->documents);
             free(entry->documents);
             free(entry);
             entry = next;
         }
     }
-
     free(index->entries);
     free(index);
 }
@@ -158,22 +107,20 @@ void reverseIndexBuild(ReverseIndex* index, DocumentsList* documents) {
 
     Document* current = documents->head;
     while (current) {
-        // Index title words
         char* title = strdup(current->title);
-        char* word = strtok(title, " \t\n\r.,;:!?()[]{}");
+        char* word = strtok(title, " \t\n\r.,;:!?()[]{}\");
         while (word) {
             reverseIndexAdd(index, word, current);
-            word = strtok(NULL, " \t\n\r.,;:!?()[]{}");
+            word = strtok(NULL, " \t\n\r.,;:!?()[]{}\");
         }
         free(title);
 
-        // Index body words
         if (current->body) {
             char* body = strdup(current->body);
-            char* word = strtok(body, " \t\n\r.,;:!?()[]{}");
+            word = strtok(body, " \t\n\r.,;:!?()[]{}\");
             while (word) {
                 reverseIndexAdd(index, word, current);
-                word = strtok(NULL, " \t\n\r.,;:!?()[]{}");
+                word = strtok(NULL, " \t\n\r.,;:!?()[]{}\");
             }
             free(body);
         }
@@ -195,13 +142,11 @@ void reverseIndexSerialize(ReverseIndex* index, char* filename) {
         ReverseIndexEntry* entry = index->entries[i];
         while (entry) {
             fprintf(file, "%s", entry->word);
-
             Document* doc = entry->documents->head;
             while (doc) {
                 fprintf(file, " %d", doc->id);
                 doc = doc->next;
             }
-
             fprintf(file, "\n");
             entry = entry->next;
         }
@@ -210,8 +155,17 @@ void reverseIndexSerialize(ReverseIndex* index, char* filename) {
     fclose(file);
 }
 
-ReverseIndex* reverseIndexDeserialize(char* filename) {
-    if (!filename) return NULL;
+Document* findDocumentById(DocumentsList* list, int id) {
+    Document* current = list->head;
+    while (current) {
+        if (current->id == id) return current;
+        current = current->next;
+    }
+    return NULL;
+}
+
+ReverseIndex* reverseIndexDeserialize(char* filename, DocumentsList* all_docs) {
+    if (!filename || !all_docs) return NULL;
 
     FILE* file = fopen(filename, "r");
     if (!file) {
@@ -219,41 +173,28 @@ ReverseIndex* reverseIndexDeserialize(char* filename) {
         return NULL;
     }
 
-    // Create a temporary index to count entries
-    ReverseIndex* temp = reverseIndexCreate(100);
-    if (!temp) {
+    ReverseIndex* index = reverseIndexCreate(100);
+    if (!index) {
         fclose(file);
         return NULL;
     }
 
-    char* line = NULL;
-    size_t len = 0;
-    ssize_t read;
-
-    while ((read = fgets(&line, &len, file)) != -1) {
+    char line[1024];
+    while (fgets(line, sizeof(line), file)) {
         line[strcspn(line, "\n")] = '\0';
-
         char* word = strtok(line, " ");
         if (!word) continue;
 
         char* id_str;
         while ((id_str = strtok(NULL, " "))) {
             int id = atoi(id_str);
-            // In a real implementation, we'd need the actual Document objects
-            // For now, we just count entries to determine capacity
-            temp->size++;
+            Document* doc = findDocumentById(all_docs, id);
+            if (doc) {
+                reverseIndexAdd(index, word, doc);
+            }
         }
     }
 
-    free(line);
     fclose(file);
-    reverseIndexFree(temp);
-
-    // Now create the real index with appropriate capacity
-    ReverseIndex* index = reverseIndexCreate(temp->size * 2); // Load factor 0.5
-
-    // TODO: Actually populate the index from file
-    // This would require having access to the Documents
-
     return index;
 }
