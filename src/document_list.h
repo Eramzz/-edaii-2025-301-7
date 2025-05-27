@@ -1,34 +1,14 @@
 #ifndef DOCUMENT_LIST_H
 #define DOCUMENT_LIST_H
+
+#include "document.h"
 #include <stdbool.h>
-#include "link.h"
 
-
-typedef struct Document {
-    int id;
-    char* title;
-    char* body;
-    Link* links;
-    float relevance_score;
-    struct Document* next;
-} Document;
-
-typedef struct Node {
-   Document* document;
-   struct Node* next;
-} Node;
-
-typedef struct DocumentsList {
-  	Document* head;
-	int size;
-} DocumentsList;
-
-Document* DocumentsListInit();
-void documentFree(DocumentsList* list, bool freeDocs);
-void documentsListAppend(DocumentsList* list, Document* document);
-bool DocumentsListContains(DocumentsList* list, int id);
-Document* documentsListGet(DocumentsList* list, int index);
-Document* DocumentsListFromFolder(char* folderPath, int count);
-Document* DocumentListSortedDescending(DocumentsList* list);
+void documentsListInit(DocumentsList* list);
+void documentsListAppend(DocumentsList* list, Document* doc);
+void documentsListFree(DocumentsList* list);
+void documentsListPrint(DocumentsList* list);
+void documentsListLoadFromDir(DocumentsList* list, const char* dirpath);
 
 #endif // DOCUMENT_LIST_H
+

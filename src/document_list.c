@@ -1,45 +1,38 @@
-#include <dirent.h>
+#include "document_list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "document2.h"
-#include "link.h"
-#include "reverse_index.h"
-#include "query.h"
-#include "directed_graph.h"
-#include "last3_queries.h"
-#include <stdbool.h>
 #include <dirent.h>
-
-#ifndef DT_REG
-#define DT_REG 8
-#endif
-
+#include <stdbool.h>
+#include <sys/stat.h>
 
 void documentsListInit(DocumentsList* list) {
     list->head = NULL;
+    list->size = 0;
 }
 
-void documentListLoadFromDir(DocumentsList* list, const char* dirpath) {
-    DIR* dir = opendir(dirpath);
-    if (!dir) return;
+void documentsListAppend(DocumentsList* list, Document* doc) {
+    if (!list || !doc) return;
 
-    struct dirent* entry;
-    while ((entry = readdir(dir))) {
-        if (entry->d_type == DT_REG) {
-            char path[512];
-            snprintf(path, sizeof(path), "%s/%s", dirpath, entry->d_name);
-            Document* doc = documentDeserialize(path);
-            if (doc) {
-                doc->next = list->head;
-                list->head = doc;
-            }
-        }
+    doc->next = list->head;
+    list->head = doc;
+    list->size++;
+}
+
+void documentsListFree(DocumentsList* list) {
+    if (!list) return;
+
+    Document* curr = list->head;
+    while (curr) {
+        Document* next = curr->next;
+        documentFree(curr, true);
+        curr = next;
     }
-    closedir(dir);
+    list->head = NULL;
+    list->size = 0;
 }
 
-void documentListPrint(DocumentsList* list) {
+void documentsListPrint(DocumentsList* list) {
     Document* curr = list->head;
     int index = 0;
     while (curr) {
@@ -48,12 +41,23 @@ void documentListPrint(DocumentsList* list) {
     }
 }
 
-void documentListFree(DocumentsList* list) {
-    Document* curr = list->head;
-    while (curr) {
-        Document* next = curr->next;
-        documentFree(curr, true);
-        curr = next;
+void documentsListLoadFromDir(DocumentsList* list, const char* dirpath) {
+    DIR* dir = opendir(dirpath);
+    if (!dir) return;
+
+    struct dirent* entry;
+    while ((entry = readdir(dir))) {
+        char path[512];
+        snprintf(path, sizeof(path), "%s/%s", dirpath, entry->d_name);
+
+        struct stat path_stat;
+        stat(path, &path_stat);
+        if (S_ISREG(path_stat.st_mode)) {
+            Document* doc = documentDeserialize(path);
+            if (doc) {
+                documentsListAppend(list, doc);
+            }
+        }
     }
-    list->head = NULL;
+    closedir(dir);
 }
