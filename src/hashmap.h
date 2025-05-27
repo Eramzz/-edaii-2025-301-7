@@ -4,7 +4,7 @@
 #ifndef HASHMAP_H
 #define HASHMAP_H
 
-#include "document.h"
+#include "document2.h"
 #include <stdbool.h>
 
 

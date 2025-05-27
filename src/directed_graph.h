@@ -1,7 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "document.h"
+#include "document2.h"
 #include <stdbool.h>
 
 

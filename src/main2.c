@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "document.h"
+#include "document2.h"
 #include "query.h"
-#include "reverse_index.h"
+#include "reverse2.h"
 
 #define MAX_QUERY_LENGTH 256
 
