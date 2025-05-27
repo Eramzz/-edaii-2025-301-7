@@ -3,10 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "document_list.h"
+#include "document2.h"
 #include <stdbool.h>
+#include <dirent.h>
+
+#ifndef DT_REG
+#define DT_REG 8
+#endif
 
 
-void documentsListInit(DocumentList* list) {
+void documentsListInit(DocumentsList* list) {
     list->head = NULL;
 }
 
@@ -42,7 +48,7 @@ void documentListFree(DocumentsList* list) {
     Document* curr = list->head;
     while (curr) {
         Document* next = curr->next;
-        documentFree(curr);
+        documentFree(curr, true);
         curr = next;
     }
     list->head = NULL;

@@ -15,7 +15,7 @@ typedef struct links {
 
 Link* linkInit();
 void linksFree(Links* list);
-void linkAppend(Links* list, int id);
+void linkAppend(Link** head, int id);
 bool LinksContains(Links* list, int id);
 int LinksGet(Links* list, int index);
 #endif

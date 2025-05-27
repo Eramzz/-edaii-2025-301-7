@@ -1,10 +1,8 @@
 #ifndef DOCUMENT_LIST_H
 #define DOCUMENT_LIST_H
 #include <stdbool.h>
+#include "link.h"
 
-
-#ifndef DOCUMENT_H
-#define DOCUMENT_H
 
 typedef struct Document {
     int id;
@@ -34,4 +32,4 @@ Document* documentsListGet(DocumentsList* list, int index);
 Document* DocumentsListFromFolder(char* folderPath, int count);
 Document* DocumentListSortedDescending(DocumentsList* list);
 
-#endif
+#endif // DOCUMENT_LIST_H

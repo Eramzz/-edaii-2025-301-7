@@ -19,7 +19,7 @@ int containsAllWords(Document* doc, Query* q) {
     return 1;
 }
 
-void searchDocuments(DocumentList* docs, Query* q) {
+void searchDocuments(DocumentsList* docs, Query* q) {
     Document* curr = docs->head;
     int found = 0;
     while (curr && found < 5) {

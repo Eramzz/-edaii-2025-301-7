@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#define _GNU_SOURCE
-#include <stdio.h>
+#include <ctype
 #include <stdbool.h>
+
+#define _GNU_SOURCE
 
 
 #define INITIAL_LINKS_CAPACITY 10
