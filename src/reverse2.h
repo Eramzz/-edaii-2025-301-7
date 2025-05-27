@@ -1,7 +1,7 @@
 #ifndef REVERSE2_H
 #define REVERSE2_H
 
-#include "document.h"   // Para usar Document y DocumentsList
+#include "document2.h"   // Para usar Document y DocumentsList
 
 // Estructura de entrada del índice invertido
 typedef struct ReverseIndexEntry {
