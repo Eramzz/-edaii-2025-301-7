@@ -1,7 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "document2.h"
+#include "link.h"
+#include "reverse_index.h"
 #include "query.h"
+#include "directed_graph.h"
+#include "last3_queries.h"
 #include <stdbool.h>
 
 

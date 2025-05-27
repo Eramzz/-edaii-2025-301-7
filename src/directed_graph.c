@@ -1,9 +1,15 @@
 
-#include "directed_graph.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
+#include "document2.h"
+#include "link.h"
+#include "reverse_index.h"
+#include "query.h"
+#include "directed_graph.h"
+#include "last3_queries.h"
 
 #define INITIAL_NEIGHBORS_CAPACITY 10
 

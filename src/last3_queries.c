@@ -1,6 +1,10 @@
 // Created by sofia on 08/05/2025.
 //
+#include "document2.h"
+#include "link.h"
+#include "reverse_index.h"
 #include "query.h"
+#include "directed_graph.h"
 #include "last3_queries.h"
 
 #include <stdio.h>

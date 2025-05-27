@@ -3,12 +3,6 @@
 
 #include "link.h"
 
-typedef struct Link {
-    int destination_id;
-    char* text;
-    struct Link* next;
-} Link;
-
 typedef struct Document {
     int id;
     char* title;
@@ -18,7 +12,16 @@ typedef struct Document {
     struct Document* next;
 } Document;
 
-// Carga un documento desde un archivo en disco
-Document* documentDeserialize(char* path);
+typedef struct {
+    Document* head;
+    int size;
+} DocumentsList;
 
-#endif // DOCUMENT_H
+// Funciones
+Document* documentDeserialize(char* path);
+void documentFree(Document* doc, bool freeLinks);
+void documentsListAppend(DocumentsList* list, Document* doc);
+void documentsListFree(DocumentsList* list);
+
+#endif
+
