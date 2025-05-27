@@ -1,11 +1,9 @@
-
 #include "reverse_index.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-
 
 #define HASH_MULTIPLIER 31
 

@@ -1,5 +1,5 @@
 
-#include "graph.h"
+#include "directed_graph.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>

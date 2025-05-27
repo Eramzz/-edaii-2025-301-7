@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 
-void documentsListInit(DocumentList* list) {
+void documentsListInit(DocumentsList* list) {
     list->head = NULL;
 }
 
@@ -42,7 +42,7 @@ void documentListFree(DocumentsList* list) {
     Document* curr = list->head;
     while (curr) {
         Document* next = curr->next;
-        documentFree(curr);
+        documentFree(curr, true);
         curr = next;
     }
     list->head = NULL;

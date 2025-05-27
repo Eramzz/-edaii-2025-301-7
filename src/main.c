@@ -14,7 +14,7 @@ extern void searchDocuments(DocumentList* docs, Query* q);
 
 
 int main() {
-  DocumentList docs;
+  DocumentsList docs;
   documentListInit(&docs);
   documentListLoadFromDir(&docs, "datasets/wikipedia12");
 
