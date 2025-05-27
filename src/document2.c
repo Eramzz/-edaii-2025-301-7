@@ -74,12 +74,12 @@ Document* documentDeserialize(char* path) {
                     int dest_id = atoi(dest_str);
 
                     Link* new_link = (Link*)malloc(sizeof(Link));
-                    new_link->text = link_text;
-                    new_link->destination_id = dest_id;
+                    new_link->id = dest_id;
                     new_link->next = doc->links;
                     doc->links = new_link;
-
+                    free(link_text);
                     free(dest_str);
+
                 }
             }
             link_start = strchr(link_end ? link_end + 1 : link_start + 1, '[');

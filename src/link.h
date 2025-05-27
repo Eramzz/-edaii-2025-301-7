@@ -2,7 +2,7 @@
 #define LINK_H
 
 typedef struct Link {
-    int id;
+    int id;               // ✅ solo tiene el ID del documento destino
     struct Link* next;
 } Link;
 
@@ -11,3 +11,4 @@ void linkAppend(Link** head, int id);
 void linkFree(Link* head);
 
 #endif
+
