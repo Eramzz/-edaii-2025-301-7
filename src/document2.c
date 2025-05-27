@@ -105,15 +105,10 @@ Document* documentDeserialize(char* path) {
     return doc;
 }
 
-void documentsListFree(DocumentsList* list) {
-    if (!list) return;
-
-    Document* curr = list->head;
-    while (curr) {
-        Document* next = curr->next;
-        documentFree(curr, true);
-        curr = next;
-    }
-    list->head = NULL;
-    list->size = 0;
+void documentFree(Document* doc, bool freeLinks) {
+    if (!doc) return;
+    if (freeLinks && doc->links) linkFree(doc->links);
+    free(doc->title);
+    free(doc->body);
+	free(doc);
 }

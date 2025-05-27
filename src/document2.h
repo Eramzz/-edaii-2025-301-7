@@ -22,7 +22,7 @@ typedef struct {
 Document* documentDeserialize(char* path);
 void documentFree(Document* doc, bool freeLinks);
 void documentsListAppend(DocumentsList* list, Document* doc);
-void documentsListFree(DocumentsList* list);
+void documentFree(Document* doc, bool freeLinks);
 
 #endif
 
