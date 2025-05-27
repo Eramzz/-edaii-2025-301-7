@@ -4,9 +4,6 @@
 #include "link.h"
 
 
-#ifndef DOCUMENT_H
-#define DOCUMENT_H
-
 typedef struct Document {
     int id;
     char* title;
