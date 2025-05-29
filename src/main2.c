@@ -2,69 +2,81 @@
 #include <stdlib.h>
 #include <string.h>
 #include "document2.h"
-#include "link.h"
+#include "document_list.h"
+#include "directed_graph.h"
 #include "reverse_index.h"
 #include "query.h"
-#include "directed_graph.h"
 #include "last3_queries.h"
-#include "document_list.h"
 
 #define MAX_QUERY_LENGTH 256
+#define SNIPPET_PADDING 75  // Caracteres alrededor de palabras clave
 
-void sortDocumentsByRelevance(DocumentsList* list) {
-    if (!list || !list->head) return;
+// Función para comparar documentos por relevancia (para qsort)
+int compareDocuments(const void* a, const void* b) {
+    const Document* docA = *(const Document**)a;
+    const Document* docB = *(const Document**)b;
+    return (docB->relevance_score > docA->relevance_score) ? 1 : -1;
+}
 
-    int swapped;
-    Document* ptr1;
-    Document* lptr = NULL;
+// Genera un snippet del texto alrededor de la primera aparición de una palabra
+char* generateSnippet(const char* text, const char* word) {
+    const char* found = strstr(text, word);
+    if (!found) return strdup("(No snippet available)");
 
-    do {
-        swapped = 0;
-        ptr1 = list->head;
+    int start_pos = found - text;
+    int start = (start_pos - SNIPPET_PADDING > 0) ? start_pos - SNIPPET_PADDING : 0;
+    int end_pos = start_pos + strlen(word);
+    int end = (end_pos + SNIPPET_PADDING < strlen(text)) ? end_pos + SNIPPET_PADDING : strlen(text);
 
-        while (ptr1->next != lptr) {
-            if (ptr1->relevance_score < ptr1->next->relevance_score) {
-                int temp_id = ptr1->id;
-                char* temp_title = ptr1->title;
-                char* temp_body = ptr1->body;
-                float temp_score = ptr1->relevance_score;
-                Link* temp_links = ptr1->links;
+    char* snippet = malloc(end - start + 4);  // +3 para "..." y null terminator
+    if (!snippet) return NULL;
 
-                ptr1->id = ptr1->next->id;
-                ptr1->title = ptr1->next->title;
-                ptr1->body = ptr1->next->body;
-                ptr1->relevance_score = ptr1->next->relevance_score;
-                ptr1->links = ptr1->next->links;
+    if (start > 0) strcpy(snippet, "...");
+    else snippet[0] = '\0';
 
-                ptr1->next->id = temp_id;
-                ptr1->next->title = temp_title;
-                ptr1->next->body = temp_body;
-                ptr1->next->relevance_score = temp_score;
-                ptr1->next->links = temp_links;
+    strncat(snippet, text + start, end - start);
 
-                swapped = 1;
+    if (end < strlen(text)) strcat(snippet, "...");
+
+    return snippet;
+}
+
+// Muestra los resultados de búsqueda con snippets
+void displayResults(Document** results, int count, Query* query) {
+    for (int i = 0; i < count && i < 5; i++) {
+        printf("\n[%d] %s (Relevance: %.2f)\n", i, results[i]->title, results[i]->relevance_score);
+
+        // Encontrar la primera palabra de la query en el documento
+        QueryItem* item = query->head;
+        char* snippet = NULL;
+        while (item && !snippet) {
+            if (item->type == INCLUDE) {
+                snippet = generateSnippet(results[i]->body, item->word);
             }
-            ptr1 = ptr1->next;
+            item = item->next;
         }
-        lptr = ptr1;
-    } while (swapped);
+
+        printf("%s\n", snippet ? snippet : "(No snippet available)");
+        free(snippet);
+    }
+    if (count == 0) printf("\nNo results found.\n");
 }
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        printf("Uso: %s archivo1.txt archivo2.txt ...\n", argv[0]);
+        printf("Usage: %s file1.txt file2.txt ...\n", argv[0]);
         return 1;
     }
 
+    // 1. Cargar documentos
     DocumentsList documents = { .head = NULL, .size = 0 };
     for (int i = 1; i < argc; i++) {
         Document* doc = documentDeserialize(argv[i]);
-        if (doc) {
-            documentsListAppend(&documents, doc);
-        }
+        if (doc) documentsListAppend(&documents, doc);
     }
 
-    DocumentGraph* graph = documentGraphCreate(100);
+    // 2. Construir grafo de documentos
+    DocumentGraph* graph = documentGraphCreate(argc * 2);  // Capacidad inicial generosa
     Document* current = documents.head;
     while (current) {
         documentGraphAddNode(graph, current->id);
@@ -76,25 +88,24 @@ int main(int argc, char* argv[]) {
         current = current->next;
     }
 
-    current = documents.head;
-    while (current) {
-        current->relevance_score = graphGetIndegree(graph, current->id);
-        current = current->next;
-    }
+    // 3. Calcular relevancia (usando PageRank)
+    calculatePageRank(graph, 0.85, 100, 0.001);
 
-    ReverseIndex* index = reverseIndexCreate(100);
+    // 4. Construir índice invertido
+    ReverseIndex* index = reverseIndexCreate(argc * 10);  // Tamaño hashmap grande
     reverseIndexBuild(index, &documents);
 
+    // 5. Historial de búsquedas
     QueryQueue history;
     initQueue(&history);
 
+    // 6. Bucle principal de búsqueda
+    char query_input[MAX_QUERY_LENGTH];
     while (1) {
-        printf("\n******* Recent Searches ********\n");
+        printf("\n=== Search Engine ===\n");
         showLastQueries(&history);
-        printf("********************************\n");
-        printf("Search: ");
+        printf("\nEnter query (empty to exit): ");
 
-        char query_input[MAX_QUERY_LENGTH];
         if (!fgets(query_input, MAX_QUERY_LENGTH, stdin)) break;
         query_input[strcspn(query_input, "\n")] = '\0';
         if (strlen(query_input) == 0) break;
@@ -102,58 +113,57 @@ int main(int argc, char* argv[]) {
         enqueueQuery(&history, query_input);
         Query* query = queryInit(query_input);
 
-        DocumentsList* result_lists[MAX_QUERY_LENGTH];
-        int num_keywords = 0;
-        QueryItem* item = query->head;
-        while (item) {
-            result_lists[num_keywords++] = reverseIndexGet(index, item->word);
-            item = item->next;
-        }
+        // Buscar documentos que coincidan con TODOS los términos
+        Document* results[documents.size];
+        int result_count = 0;
 
-        DocumentsList results = { .head = NULL, .size = 0 };
         Document* doc = documents.head;
         while (doc) {
             int match = 1;
-            for (int i = 0; i < num_keywords; i++) {
-                Document* temp = result_lists[i] ? result_lists[i]->head : NULL;
-                int found = 0;
-                while (temp) {
-                    if (temp->id == doc->id) {
-                        found = 1;
+            QueryItem* item = query->head;
+
+            while (item && match) {
+                if (item->type == INCLUDE) {
+                    DocumentsList* docs_with_word = reverseIndexGet(index, item->word);
+                    if (!docs_with_word) {
+                        match = 0;
                         break;
                     }
-                    temp = temp->next;
+
+                    int found = 0;
+                    Document* temp = docs_with_word->head;
+                    while (temp) {
+                        if (temp->id == doc->id) {
+                            found = 1;
+                            break;
+                        }
+                        temp = temp->next;
+                    }
+                    if (!found) match = 0;
                 }
-                if (!found) {
-                    match = 0;
-                    break;
-                }
+                item = item->next;
             }
+
             if (match) {
-                documentsListAppend(&results, doc);
+                results[result_count++] = doc;
             }
             doc = doc->next;
         }
 
-        sortDocumentsByRelevance(&results);
+        // Ordenar por relevancia
+        qsort(results, result_count, sizeof(Document*), compareDocuments);
 
-        Document* res = results.head;
-        int count = 0;
-        while (res && count < 5) {
-            printf("(%d) %s\nRelevance score: %.0f\n", count, res->title, res->relevance_score);
-            printf("%.150s%s\n\n", res->body, strlen(res->body) > 150 ? "..." : "");
-            count++;
-            res = res->next;
-        }
-        if (count == 0) printf("No results found.\n");
+        // Mostrar resultados
+        displayResults(results, result_count, query);
 
         queryFree(query);
-        documentsListFree(&results);
     }
 
+    // Liberar memoria
     reverseIndexFree(index);
-    documentsListFree(&documents);
     documentGraphFree(graph);
+    documentsListFree(&documents);
     freeQueue(&history);
+
     return 0;
 }

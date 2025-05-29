@@ -1,27 +1,25 @@
-#include "document2.h"
-#include "link.h"
-#include "reverse_index.h"
-#include "query.h"
-#include "directed_graph.h"
-#include "last3_queries.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdbool.h>
+#include "reverse_index.h"
+#include "document2.h
+#include "document_list.h"
 
 #define HASH_MULTIPLIER 31
 
 unsigned long hash(const char* str, int capacity) {
-    unsigned long hash = 0;
-    while (*str) {
-        hash = hash * HASH_MULTIPLIER + tolower(*str);
-        str++;
+    unsigned long hash = 5381;
+    int c;
+    while ((c = tolower(*str++))) {
+        hash = ((hash << 5) + hash) + c;  // hash * 33 + c
     }
     return hash % capacity;
 }
 
 ReverseIndex* reverseIndexCreate(int capacity) {
+    if (capacity <= 0) return NULL;
+
     ReverseIndex* index = (ReverseIndex*)malloc(sizeof(ReverseIndex));
     if (!index) return NULL;
 
@@ -30,36 +28,51 @@ ReverseIndex* reverseIndexCreate(int capacity) {
         free(index);
         return NULL;
     }
-
-    index->size = 0;
     index->capacity = capacity;
+    index->size = 0;
     return index;
 }
 
-void reverseIndexAdd(ReverseIndex* index, char* word, Document* doc) {
+void reverseIndexAdd(ReverseIndex* index, const char* word, Document* doc) {
     if (!index || !word || !doc) return;
 
-    for (char* p = word; *p; p++) *p = tolower(*p);
+    char* normalized = strdup(word);
+    if (!normalized) return;
 
-    unsigned long h = hash(word, index->capacity);
+    for (char* p = normalized; *p; p++) *p = tolower(*p);
+
+    unsigned long h = hash(normalized, index->capacity);
     ReverseIndexEntry* entry = index->entries[h];
 
     while (entry) {
-        if (strcmp(entry->word, word) == 0) {
+        if (strcmp(entry->word, normalized) == 0) {
             Document* current = entry->documents->head;
             while (current) {
-                if (current->id == doc->id) return;
+                if (current->id == doc->id) {
+                    free(normalized);
+                    return;
+                }
                 current = current->next;
             }
             documentsListAppend(entry->documents, doc);
+            free(normalized);
             return;
         }
         entry = entry->next;
     }
 
-    ReverseIndexEntry* new_entry = (ReverseIndexEntry*)malloc(sizeof(ReverseIndexEntry));
-    new_entry->word = strdup(word);
-    new_entry->documents = (DocumentsList*)malloc(sizeof(DocumentsList));
+    ReverseIndexEntry* new_entry = malloc(sizeof(ReverseIndexEntry));
+    if (!new_entry) {
+        free(normalized);
+        return;
+    }
+    new_entry->word = normalized;
+    new_entry->documents = malloc(sizeof(DocumentsList));
+    if (!new_entry->documents) {
+        free(new_entry);
+        free(normalized);
+        return;
+    }
     new_entry->documents->head = NULL;
     new_entry->documents->size = 0;
     documentsListAppend(new_entry->documents, doc);
@@ -69,19 +82,22 @@ void reverseIndexAdd(ReverseIndex* index, char* word, Document* doc) {
     index->size++;
 }
 
-DocumentsList* reverseIndexGet(ReverseIndex* index, char* word) {
+DocumentsList* reverseIndexGet(ReverseIndex* index, const char* word) {
     if (!index || !word) return NULL;
 
     char* normalized = strdup(word);
+    if (!normalized) return NULL;
+
     for (char* p = normalized; *p; p++) *p = tolower(*p);
 
     unsigned long h = hash(normalized, index->capacity);
     ReverseIndexEntry* entry = index->entries[h];
+    DocumentsList* result = NULL;
 
     while (entry) {
         if (strcmp(entry->word, normalized) == 0) {
-            free(normalized);
-            return entry->documents;
+            result = entry->documents;
+            break;
         }
         entry = entry->next;
     }

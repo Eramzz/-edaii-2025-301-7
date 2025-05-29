@@ -1,34 +1,34 @@
 #include <stdlib.h>
-#include "document2.h"
 #include "link.h"
-#include "reverse_index.h"
-#include "query.h"
-#include "directed_graph.h"
-#include "last3_queries.h"
-#include <stdbool.h>
-
 
 Link* linkCreate(int id) {
-    Link* l = (Link*)malloc(sizeof(Link));
-    l->id = id;
-    l->next = NULL;
-    return l;
+    Link* new_link = (Link*)malloc(sizeof(Link));
+    if (!new_link) return NULL;
+
+    new_link->id = id;
+    new_link->next = NULL;
+    return new_link;
 }
 
 void linkAppend(Link** head, int id) {
-    Link* newLink = linkCreate(id);
+    if (!head) return;
+
+    Link* new_link = linkCreate(id);
+    if (!new_link) return;
+
     if (!*head) {
-        *head = newLink;
+        *head = new_link;
     } else {
         Link* curr = *head;
         while (curr->next) curr = curr->next;
-        curr->next = newLink;
+        curr->next = new_link;
     }
 }
 
 void linkFree(Link* head) {
+    Link* tmp;
     while (head) {
-        Link* tmp = head;
+        tmp = head;
         head = head->next;
         free(tmp);
     }

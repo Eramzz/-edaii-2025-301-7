@@ -11,17 +11,11 @@ typedef struct Document {
     Link* links;
     float relevance_score;
     struct Document* next;
-} Document;
 
-typedef struct {
-    Document* head;
-    int size;
-} DocumentsList;
+} Document;
 
 // Funciones
 Document* documentDeserialize(char* path);
-void documentFree(Document* doc, bool freeLinks);
-void documentsListAppend(DocumentsList* list, Document* doc);
 void documentFree(Document* doc, bool freeLinks);
 
 #endif

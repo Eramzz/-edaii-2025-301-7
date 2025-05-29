@@ -1,10 +1,7 @@
-//
-// Created by sofia on 08/05/2025.
-//
-#include <stdbool.h>
-
 #ifndef LAST3_QUERIES_H
 #define LAST3_QUERIES_H
+
+#include <stdbool.h>
 
 #define MAX_QUERIES 3 //num max request que se pueden guardar en la cola
 
@@ -17,7 +14,7 @@ typedef struct {
 } QueryQueue;
 
 void initQueue(QueryQueue* q);  //Inicializa cola
-void enqueueQuery(QueryQueue* q, const char* query_str);  //Añade la nueva request a la cola
+bool enqueueQuery(QueryQueue* q, const char* query_str);  //Añade la nueva request a la cola
 void showLastQueries(const QueryQueue* q);  //Enseña las últimas 3 colas
 void freeQueue(QueryQueue* q); //Libera memoria cola
 

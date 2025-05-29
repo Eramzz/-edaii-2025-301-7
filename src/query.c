@@ -9,18 +9,26 @@
 #include "last3_queries.h"
 #include <stdbool.h>
 
-
-
 //Función que crea un nuevo elemento para la linked ist
 QueryItem* queryItemCreate(const char* word) {
+    if (!word) return NULL; //si no recibe nada no hace nada
+
     QueryItem* item = (QueryItem*)malloc(sizeof(QueryItem)); //reserva memoria para una request
+    if (!item) return NULL; //si no reserva memoria no hace nada
+
     item->word = strdup(word); //duplica la cadena utilizando strdup para tener la copia completa de la palabra en el nodo
+    if (!item->word) { //si no copia la palabra no hace nada
+        free(item); //libera memoria del nodo
+        return NULL; //retorna NULL
+    }
+
     item->next = NULL; //inicializa el puntero next como NULL
     return item; //retorna nuevo nodo creado
 }
 
 //convierte todas las letra a minúscula y elimina signos de puntuación, números o carácteres especiales
 void NormalizeWord(char* word) {
+    if (!word) return; //si no recibe nada no hace nada
     int i, j = 0; //inicializa variables i y j a 0. La i para recorrer la cadena original y la j para la nueva cadena
 
     for (i = 0; word[i]; i++) {
@@ -36,9 +44,18 @@ void NormalizeWord(char* word) {
 
 //Función que inicializa la estructura Query cuando recibe texto
 Query* queryInit(const char* input) {
+    if (!input) return NULL;
+
     Query* q = (Query*)malloc(sizeof(Query)); //reserva memoria para la estructura Query q (lista enlazada)
+    if (!q) return NULL;
     q->head = NULL; //establecemos el head a NULL pq inicialmente la lista esta vacía
+
     char* inputCopy = strdup(input); //hace copia del input recibido para no perder el valor después
+    if (!inputCopy) {
+        free(q); //libera memoria de la estructura Query
+        return NULL; //retorna NULL pq no pudo copiar la cadena
+    }
+
     char* token = strtok(inputCopy, " "); //primera palabra separada por espacios
     QueryItem** current = &q->head; //inicializa doble puntero que conecta los nuevos elementos al final de la lista
 
@@ -47,21 +64,22 @@ Query* queryInit(const char* input) {
         NormalizeWord(token); //normaliza la palabra: quita simbolos y num solo quedan letras min
 
         if (strlen(token) > 2) {  //No acepta palabras <2
-            *current = queryItemCreate(token); //crea el nuevo QueryItem y lo enlaza a la lista
+
+            QueryItem* nou_item = queryItemCreate(token); //crea el nuevo QueryItem y lo enlaza a la lista
+            if (!nou_item) continue;
+            *current = nou_item; //enlaza el nuevo QueryItem al final de la lista
             current = &((*current)->next); //desplaza el puntero current al siguiente de next
         }
-
         //pasa a la siguiente palabra
         token = strtok(NULL, " ");
     }
-
     free(inputCopy); //libera la copia del input de la memoria
-
     return q; //devuelve la lista enlazada q
 }
 
 //función que libera la memori
 void queryFree(Query* query) {
+    if (!query) return;
     QueryItem* curr = query->head; //apunta al 1r elem de la lista
 
     //va recorriendo la lista

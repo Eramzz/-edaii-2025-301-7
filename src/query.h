@@ -1,13 +1,14 @@
-//
-// Created by Dell on 24/04/2025.
-//
-#include <stdbool.h>
-
 #ifndef QUERY_H
 #define QUERY_H
 
+#include <stdbool.h>
+
+typedef enum { INCLUDE, EXCLUDE } QueryItemType;
+
+
 typedef struct QueryItem {
     char* word;
+    QueryItemType type;
     struct QueryItem* next;
 } QueryItem;
 

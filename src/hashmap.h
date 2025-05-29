@@ -1,11 +1,7 @@
-//
-// Created by sofia on 22/05/2025.
-//
 #ifndef HASHMAP_H
 #define HASHMAP_H
 
 #include "document2.h"
-#include <stdbool.h>
 
 
 //estructura nodo de la lista quew tiene puntero a doc
@@ -28,18 +24,11 @@ typedef struct ReverseIndex {
 } ReverseIndex;
 
 //funciones Hashmap
-ReverseIndex* reverseIndexCreate(int size); //crea tabla tamaño que queremos
-void reverseIndexAdd(ReverseIndex* index, const char* word, Document* doc);//añade palabra y doc al indice
-DocumentNode* reverseIndexGet(ReverseIndex* index, const char* word); //obten lista que contiene palabra
-void reverseIndexFree(ReverseIndex* index); //liberar memoria indice
-void reverseIndexBuild(ReverseIndex* index, DocumentsList* list);
-void reverseIndexAddAll(ReverseIndex* index, DocumentsList* docs);
+ReverseIndex* hashmapCreate(int size); // Crea una nueva tabla hash.
+void hashmapAdd(ReverseIndex* index, const char* word, Document* doc); // Añade un documento a la lista de una palabra.
+DocumentNode* hashmapGet(ReverseIndex* index, const char* word); // Busca documentos asociados a una palabra.
+void hashmapFree(ReverseIndex* index);
 
-
-void reverseIndexBuild(ReverseIndex* index, DocumentsList* list); //conmstruye indice con doc
-
-// FUNCION DE HASH PRINMCIPAL
-unsigned int hash(const char* str, int size);
 
 #endif // HASHMAP_H
 
