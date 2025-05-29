@@ -54,7 +54,7 @@ void documentsListPrint(DocumentsList* list) {
 
 bool documentsListLoadFromDir(DocumentsList* list, const char* dirpath) {
     DIR* dir = opendir(dirpath);
-    if (!dir) return;
+    if (!dir) return false;
 
     struct dirent* entry;
     while ((entry = readdir(dir))) {

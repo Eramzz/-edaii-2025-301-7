@@ -3,6 +3,11 @@
 #include <ctype.h>
 #include "hashmap.h"
 
+char* normalize(const char* word) {
+    char* norm = strdup(word);
+    for (char* p = norm; *p; p++) *p = tolower(*p);
+    return norm;
+}
 
 //FUNCION QUE CONVIERTE PALABRA A NUMERO
 unsigned int hash(const char* str, int size) { //entra palabra que es lo que cambiar a num, tamaño array
@@ -32,11 +37,13 @@ ReverseIndex* hashmapCreate(int size) {
 void hashmapAdd(ReverseIndex* index, const char* word, Document* doc) {
     if (!index || !word || !doc) return;
 
-    unsigned int bucket = hash(word, index->size); //Calcula el índice del bucket función hash
+    char* normalized = normalize(word);
+
+    unsigned int bucket = hash(normalized, index->size); //Calcula el índice del bucket función hash
     WordEntry* entry = index->buckets[bucket];  //Saca el primer WordEntry del array buckets
 
     while (entry) {     //Recorre la lista de bucket
-        if (strcasecmp(entry->word, word) == 0) {    //Si la palabra existe
+        if (strcasecmp(entry->word, normalized) == 0) {    //Si la palabra existe
             DocumentNode* node = entry->docs;  //Recorre lista de documentos con esa palabra
             while (node) {
                 if (node->doc == doc) return;    //si ya lo tiene registrado no hace nada y sale de la función
@@ -48,6 +55,7 @@ void hashmapAdd(ReverseIndex* index, const char* word, Document* doc) {
             new_node->doc = doc;                                       //Asigna el documento
             new_node->next = entry->docs;                              //Aade a la linked list
             entry->docs = new_node;
+            free(normalized);                                           //Libera la palabra normalizada
             return;
         }
         entry = entry->next;                                          //Pasa al siguiente WordEntry de la lista
@@ -56,21 +64,21 @@ void hashmapAdd(ReverseIndex* index, const char* word, Document* doc) {
     WordEntry* new_entry = malloc(sizeof(WordEntry));
     if (!new_entry) return;
 
-    new_entry->word = strdup(word);
+    new_entry->word = strdup(normalized);
     if (!new_entry->word) {
         free(new_entry);
         return;
     }
 
-    new_entry->docs = malloc(sizeof(DocumentNode));
+    new_entry->docs = calloc(1, sizeof(DocumentNode));
+
     if (!new_entry->docs) {
         free(new_entry->word);
         free(new_entry);
         return;
     }
 
-    new_entry->docs->doc = doc;
-    new_entry->docs->next = NULL;
+
     new_entry->next = index->buckets[bucket];
     index->buckets[bucket] = new_entry;
 
@@ -80,11 +88,15 @@ void hashmapAdd(ReverseIndex* index, const char* word, Document* doc) {
 
 DocumentNode* hashmapGet(ReverseIndex* index, const char* word) {
     if (!index || !word) return NULL;
-    ;  unsigned int bucket = hash(word, index->size);
+
+    char* normalized = normalize(word);
+
+    unsigned int bucket = hash(normalized, index->size);
     WordEntry* entry = index->buckets[bucket];
 
     while (entry) {
-        if (strcasecmp(entry->word, word) == 0) {
+        if (strcasecmp(entry->word, normalized) == 0) {
+            free(normalized);
             return entry->docs;
         }
         entry = entry->next;

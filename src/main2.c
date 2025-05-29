@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "document2.h"
-#include "document_list.h"
-#include "directed_graph.h"
-#include "reverse_index.h"
-#include "query.h"
-#include "last3_queries.h"
+#include "document2.c"
+#include "document_list.c"
+#include "directed_graph.c"
+#include "reverse_index.c"
+#include "query.c"
+#include "last3_queries.c"
+#include "link.c"
 
 #define MAX_QUERY_LENGTH 256
 #define SNIPPET_PADDING 75  // Caracteres alrededor de palabras clave

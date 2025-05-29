@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "reverse_index.h"
-#include "document2.h
+#include "document2.h"
 #include "document_list.h"
 
 #define HASH_MULTIPLIER 31
@@ -101,9 +101,8 @@ DocumentsList* reverseIndexGet(ReverseIndex* index, const char* word) {
         }
         entry = entry->next;
     }
-
     free(normalized);
-    return NULL;
+    return result;
 }
 
 void reverseIndexFree(ReverseIndex* index) {

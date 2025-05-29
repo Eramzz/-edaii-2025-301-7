@@ -1,12 +1,7 @@
 #include "last3_queries.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-
-
 
 //Función que inicializa la cola
 void initQueue(QueryQueue* q) {
@@ -29,7 +24,8 @@ bool enqueueQuery(QueryQueue* q, const char* query_str) {
     if (q->contador == MAX_QUERIES) {
         free(q->queries[q->head]); //libera memoria último elem
         q->head = (q->head + 1) % MAX_QUERIES; //hace avanzar el head
-        q->contador--; //disminuye el contador
+    } else {
+        q->contador++;
     }
 
     q->tail = (q->tail + 1) % MAX_QUERIES; //avanza el tail para indicar el final de la cola
@@ -62,6 +58,8 @@ void freeQueue(QueryQueue* q) {
     for (int i = 0; i < q->contador; i++) {
         int idx = (q->head + i) % MAX_QUERIES; //indice
         free(q->queries[idx]); //Libera memoria de la cadena en la posición idx
+        q->queries[idx] = NULL;
+
     }
 
     //reinicia todos

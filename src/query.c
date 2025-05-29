@@ -1,16 +1,10 @@
+#include "query.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "document2.h"
-#include "link.h"
-#include "reverse_index.h"
-#include "query.h"
-#include "directed_graph.h"
-#include "last3_queries.h"
-#include <stdbool.h>
 
 //Función que crea un nuevo elemento para la linked ist
-QueryItem* queryItemCreate(const char* word) {
+QueryItem* queryItemCreate(const char* word, QueryItemType type) {
     if (!word) return NULL; //si no recibe nada no hace nada
 
     QueryItem* item = (QueryItem*)malloc(sizeof(QueryItem)); //reserva memoria para una request
@@ -21,7 +15,7 @@ QueryItem* queryItemCreate(const char* word) {
         free(item); //libera memoria del nodo
         return NULL; //retorna NULL
     }
-
+    item->type = type;
     item->next = NULL; //inicializa el puntero next como NULL
     return item; //retorna nuevo nodo creado
 }
@@ -59,19 +53,25 @@ Query* queryInit(const char* input) {
     char* token = strtok(inputCopy, " "); //primera palabra separada por espacios
     QueryItem** current = &q->head; //inicializa doble puntero que conecta los nuevos elementos al final de la lista
 
-    //mientras haya palabras
     while (token) {
+        QueryItemType type = INCLUDE;
+        if (token[0] == '-') {
+            type = EXCLUDE;
+            token++; //avanza el puntero para que no se tome en cuenta el -
+        }
         NormalizeWord(token); //normaliza la palabra: quita simbolos y num solo quedan letras min
 
         if (strlen(token) > 2) {  //No acepta palabras <2
-
-            QueryItem* nou_item = queryItemCreate(token); //crea el nuevo QueryItem y lo enlaza a la lista
-            if (!nou_item) continue;
+            QueryItem* nou_item = queryItemCreate(token, type); //crea el nuevo QueryItem y lo enlaza a la lista
+            if (!nou_item) {
+                token = strtok(NULL, " ");
+                continue;
+            }
             *current = nou_item; //enlaza el nuevo QueryItem al final de la lista
             current = &((*current)->next); //desplaza el puntero current al siguiente de next
         }
-        //pasa a la siguiente palabra
-        token = strtok(NULL, " ");
+        token = strtok(NULL, " "); //siguiente palabra separada por espacios
+
     }
     free(inputCopy); //libera la copia del input de la memoria
     return q; //devuelve la lista enlazada q
